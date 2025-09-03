@@ -134,16 +134,3 @@ Pero recuerda estamos viendo un poco estos fundamentos de como funcionan estos t
 
 Seguramente abran cursos especificos en platzi de playwright donde si entremos más a fondo y las formas de configurar este tipo de pruebas es más no corren en el mismo repositorio porque son asgnosticas es decir realmente no importa si estan echas en react, angular, vue, lo que sea puede aver una especie de roles que ya serian un poco más de testers en donde escriban este tipo de scripts donde tengan una ambiente mejor configurado y estemos corriendo este tipo de pruebas qué son aparte de nuestros repositorios y posiblmente
 emepiezan a levantar estos ambientes de creauar egnt y emepzamos a ejercitar ese tipo de pruebas.
-
-
-
-
-
-
-
-
-
-
-
-
-

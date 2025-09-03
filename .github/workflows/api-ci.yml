@@ -1,32 +1,42 @@
-name: API CI
-
-#on: [push]
+name: API CI  # ciclo de integración continuo de nuestra api
+#on [push] si no es un mono repo usalo si es mono repo on
 on:
-  push:
+  push: 
     paths:
-      - "./api/**"
-      - ".github/workflows/api-ci.yml"
+        - "./api/**"
+        - ".github/workflows/api-ci.yml"
 
 
+ # corra en un direcotrio base
 defaults:
-  run:
-    working-directory: ./api
+   run:
+      working-directory: ./api
 
+# jobs es la forma en githuhb puede automatizar corre en una maquina macos-lastes la rama especifia y configurando node. 
 jobs:
-  unit-test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Nodejs
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-          cache: 'npm'
-          cache-dependency-path: ./api/package-lock.json
-      - name: install
-        shell: bash
-        run: npm ci
-      - name: run unit test
-        shell: bash
-        run: npm run test
+   unit-test:
+       runs-on: macos-latest
+       steps:  
+          - name: Checkout
+            uses: actions/checkout@v4
+          - name: Setup Nodejs
+            uses: actions/setup-node@v4
+            with:
+              node-version: 20
+              cache: 'npm'
+              cache-dependency-path: ./api/package-lock.json  # isntala depencias
+
+          - name: Clear npm cache
+            shell: bash
+            run: npm cache clean --force
+
+            # isntala depencias en un entorno de depencias.
+          - name: install
+            shell:  bash
+            run: npm ci
+            # corre pruebas
+          - name: run unit test
+            shell: bash
+            run: npm run test
+    
+
