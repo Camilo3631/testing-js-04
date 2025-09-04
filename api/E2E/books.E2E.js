@@ -12,12 +12,11 @@ describe('Test for books', () => {
     let app = null;
     let server = null;
     let database = null;
-    let client = null; // guardamos el MongoClient para cerrarlo después
+    let client = null; // <--- MongoClient separado
 
-    // Antes de todas las pruebas: levantar app y conectar base de datos
     beforeAll(async () => {
         app = createApp();
-        server = app.listen(3002); // levantar servidor en puerto específico
+        server = app.listen(3002);
 
         client = new MongoClient(MONGO_URI, {
             useNewUrlParser: true,
@@ -27,22 +26,20 @@ describe('Test for books', () => {
         database = client.db(DB_NAME);
     });
 
-    // Después de todas las pruebas: cerrar servidor y base de datos
     afterAll(async () => {
         await server.close();
-        await client.close(); // cerrar conexión a MongoDB
+        await client.close(); // <--- cerrar MongoDB correctamente
     });
 
-    // Prueba para GET /api/v1/books
     describe('test for [GET] /api/v1/books', () => {
         test('should return a list of books', async () => {
-            // Semilla de datos
+            // Arrange: insertar datos de prueba
             const seedData = await database.collection('books').insertMany([
                 { name: 'Book1', year: 1998, author: 'Kamil' },
                 { name: 'Book2', year: 2020, author: 'Kamil' },
             ]);
 
-            // Hacer request y validar
+            // Act: hacer request y validar
             return request(app)
                 .get('/api/v1/books')
                 .expect(200)
