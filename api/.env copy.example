@@ -1,2 +1,2 @@
-MONGO_DB_NAME=demo
-MONGO_URL=mongodb://root:root123@localhost:27017?retryWrites=true&writeConcern=majority
+MONGO_DB_NAME=demo_e2e
+MONGO_URL=mongodb://test:test123@localhost:27018/demo_e2e?authSource=demo_e2e&writeConcern=majority
