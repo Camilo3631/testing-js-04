@@ -31,7 +31,6 @@ describe('Test for books', () => {
         app = createApp();
         // nuestro aplicación corre en un puerto especifico 3001
         server = app.listen(3002);
-        server.unref();
         const client = new MongoClient(MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
