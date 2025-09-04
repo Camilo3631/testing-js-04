@@ -1,78 +1,55 @@
+jest.setTimeout(30000); // aumenta a 30s al inicio del archivo
 
-jest.setTimeout(30000); // aumenta a 30s o más al inicio de tu archivo
-
-// Este request viene de supertest
-const request = require('supertest')
-// Conexion hacia la base de datos
+const request = require('supertest');
 const { MongoClient } = require('mongodb');
-// ponemos en marcha nuestra aplicación
-
 const createApp = require('../src/app');
-// configuramos nuestra base datos
 const { config } = require('../src/config');
 
-
-// Conexion para las pruebas E2E
 const DB_NAME = config.dbName;
 const MONGO_URI = config.dbUrl;
 
-
-// estas son las pruebas para hello endpoit
 describe('Test for books', () => {
-    // tenemos nuestra app de forma global para todas nuestra pruebas
     let app = null;
-    // tenemos nuestra instacia de servidor global
     let server = null;
-    // Nos concetamos hacia la base datos
     let database = null;
+    let client = null; // guardamos el MongoClient para cerrarlo después
 
-    // antes de todas las pruebas are un beforeAll que realice requet
+    // Antes de todas las pruebas: levantar app y conectar base de datos
     beforeAll(async () => {
         app = createApp();
-        // nuestro aplicación corre en un puerto especifico 3001
-        server = app.listen(3002);
-        const client = new MongoClient(MONGO_URI, {
+        server = app.listen(3002); // levantar servidor en puerto específico
+
+        client = new MongoClient(MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        // Conexion y cliente
-        await client.connect()
-        // la base es igual al cliente y la base datos desada
-        database = client.db(DB_NAME); 
+        await client.connect();
+        database = client.db(DB_NAME);
     });
-    // antes de correr todos nuestro casos de prueba va a cerrar la aplicación
+
+    // Después de todas las pruebas: cerrar servidor y base de datos
     afterAll(async () => {
         await server.close();
-        // es una funcion de expres
+        await client.close(); // cerrar conexión a MongoDB
+    });
 
-    })
-
-    // Encerramos nuestro caso de prueba para get
+    // Prueba para GET /api/v1/books
     describe('test for [GET] /api/v1/books', () => {
-        test('should return a list books"', async () => {  
-         // Arrange
-        // semilla de datos ( información)
-        const seedData = await database.collection('books').insertMany([
-            {
-              name: 'Book1',
-              year: 1998,
-              author: 'Kamil',
-            },
-            {
-             name: 'Book1',
-             year: 2020,
-             author: 'Kamil',
-            }
-        ]);
-        // Act 
+        test('should return a list of books', async () => {
+            // Semilla de datos
+            const seedData = await database.collection('books').insertMany([
+                { name: 'Book1', year: 1998, author: 'Kamil' },
+                { name: 'Book2', year: 2020, author: 'Kamil' },
+            ]);
+
+            // Hacer request y validar
             return request(app)
-                .get('/api/v1/books') // ruta como string
-                .expect(200) // si todo va bien 200ok
+                .get('/api/v1/books')
+                .expect(200)
                 .then(({ body }) => {
-                  console.log(body)
-                  expect(body.length).toEqual(seedData.insertedCount);
-              });
-         });
+                    console.log(body);
+                    expect(body.length).toEqual(seedData.insertedCount);
+                });
+        });
     });
 });
-
